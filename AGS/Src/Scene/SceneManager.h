@@ -1,17 +1,20 @@
 #pragma once
 
-#include<memory>
-#include<list>
-#include<chrono>
-
 class SceneBase;
-class Fader;
-class Camera;
+class Loading;
 
 class SceneManager
 {
+
 public:
-	static constexpr float DEFAULT_FPS = 60.0f;
+
+	// シーン管理用
+	enum class SCENE_ID
+	{
+		NONE,
+		TITLE,
+		GAME
+	};
 
 public:
 	// シングルトン（生成・取得・削除）
@@ -20,6 +23,10 @@ public:
 	static void DeleteInstance(void) { if (instance_ != nullptr) { delete instance_; instance_ = nullptr; } }
 
 private:
+
+	// 静的インスタンス
+	static SceneManager* instance_;
+
 	// デフォルトコンストラクタをprivateにして、
 	// 外部から生成できない様にする
 	SceneManager(void);
@@ -36,24 +43,20 @@ private:
 	// SceneManager copy = *SceneManager::GetInstance();
 	// SceneManager copied(*SceneManager::GetInstance());
 	// SceneManager moved = std::move(*SceneManager::GetInstance());
+
 public:
 
 	void Init(void);	// 初期化
+	void Init3D(void);	// 3Dの初期化
 	void Update(void);	// 更新
 	void Draw(void);	// 描画
-	void Release(void);	// 解放
+	void Delete(void);	// リソースの破棄
 
 	// 状態遷移
-	void ChangeScene(std::shared_ptr<SceneBase> scene);
+	void ChangeScene(SCENE_ID nextId);
 
-	// シーンを新しく積む
-	void PushScene(std::shared_ptr<SceneBase> scene);
-
-	// 最後に追加したシーンを削除する。
-	void PopScene(void);
-
-	// 強制的に特定のシーンに飛ぶ。リセットをかけ特定のシーンのみにする。
-	void JumpScene(std::shared_ptr<SceneBase> scene);
+	// シーンIDの取得
+	SCENE_ID GetSceneID(void) { return sceneId_; };
 
 	// ゲーム終了
 	void GameEnd(void) { isGameEnd_ = true; }
@@ -61,31 +64,17 @@ public:
 	// ゲーム終了取得
 	bool GetGameEnd(void) { return isGameEnd_; }
 
-	// デルタタイムの取得
-	float GetDeltaTime(void) const;
-
-	// カメラの取得
-	Camera* GetCamera(void) const;
-
-
 private:
 
-	// 静的インスタンス
-	static SceneManager* instance_;
+	// 各種シーン
+	SceneBase* scene_;
 
-	//Drawの関係上Backを最新のシーンとする
-	//基本的には要素は一つだけだがポーズシーンなどが積み重なる形
-	std::list<std::shared_ptr<SceneBase>>scenes_;
+	// ロード画面
+	Loading* load_;
 
-	// カメラ
-	Camera* camera_;
+	// シーンID
+	SCENE_ID sceneId_;
 
 	// ゲーム終了
 	bool isGameEnd_;
-
-	std::chrono::system_clock::time_point preTime_;
-	float deltaTime_;
-
-	// デルタタイムをリセットする
-	void ResetDeltaTime(void);
 };

@@ -1,177 +1,143 @@
 #include "SceneManager.h"
 
 #include <DxLib.h>
-#include <chrono>
 
-#include "../Loading/Loading.h"
-#include "../Scene/TitleScene.h"
-#include "../Scene/GameScene.h"
-#include "../Manager/Camera.h"
+#include "Loading/Loading.h"
+#include "TitleScene/TitleScene.h"
+#include "GameScene/GameScene.h"
 
 SceneManager* SceneManager::instance_ = nullptr;
 
-// コンストラクタ
 SceneManager::SceneManager(void)
 {
+	scene_ = nullptr;
+	load_ = nullptr;
+	sceneId_ = SCENE_ID::NONE;
 	isGameEnd_ = false;
-
-	deltaTime_ = 1.0f / 60.0f;
-
 }
 
-// デストラクタ
 SceneManager::~SceneManager(void)
 {
 }
 
-// 初期化
 void SceneManager::Init(void)
 {
 	// ロード画面生成
-	Loading::CreateInstance();
-	Loading::GetInstance()->Init();
-	Loading::GetInstance()->Load();
+	load_ = new Loading();
+	load_->Init();
+	load_->Load();
 
-	// カメラ生成
-	camera_ = new Camera();
-	camera_->Init();
+	// 3D情報の初期化
+	Init3D();
 
 	// 最初はタイトル画面から
-	ChangeScene(std::make_shared<TitleScene>());
-
-	// デルタタイム
-	preTime_ = std::chrono::system_clock::now();
+	ChangeScene(SCENE_ID::TITLE);
 }
 
+void SceneManager::Init3D(void)
+{
+	// 背景色設定
+	SetBackgroundColor(0, 0, 0);
+
+	// Zバッファを有効にする
+	SetUseZBuffer3D(true);
+
+	// Zバッファへの書き込みを有効にする
+	SetWriteZBuffer3D(true);
+
+	// バックカリングを有効にする
+	SetUseBackCulling(true);
+
+	// ライトの設定
+	SetUseLighting(true);
+
+	// 正面から斜め下に向かったライト
+	ChangeLightTypeDir({ 0.00f, -1.00f, 1.00f });
+}
 
 // 更新
 void SceneManager::Update(void)
 {
-	auto nowTime = std::chrono::system_clock::now();
-	deltaTime_ = static_cast<float>(
-		std::chrono::duration_cast<std::chrono::nanoseconds>(nowTime - preTime_).count() / 1000000000.0);
-	preTime_ = nowTime;
-
 	// シーンがなければ終了
-	if (scenes_.empty())
-		return;
+	if (scene_ == nullptr) { return; }
 
 	// ロード中
-	if (Loading::GetInstance()->IsLoading())
+	if (load_->IsLoading())
 	{
 		// ロード更新
-		Loading::GetInstance()->Update();
+		load_->Update();
 
 		// ロードの更新が終了していたら
-		if (Loading::GetInstance()->IsLoading() == false)
+		if (load_->IsLoading() == false)
 		{
 			// ロード後の初期化
-			scenes_.back()->LoadEnd();
+			scene_->LoadEnd();
 		}
 	}
 	// 通常の更新処理
 	else
 	{
 		// 現在のシーンの更新
-		scenes_.back()->Update();
+		scene_->Update();
 	}
 }
 
-// 描画
 void SceneManager::Draw(void)
 {
 	// ロード中ならロード画面を描画
-	if (Loading::GetInstance()->IsLoading())
+	if (load_->IsLoading())
 	{
 		// ロードの描画
-		Loading::GetInstance()->Draw();
+		load_->Draw();
 	}
 	// 通常の更新
 	else
 	{
-		// 積まれているもの全てを描画する
-		for (auto& scene : scenes_)
-		{
-			// シーンの描画
-			scene->Draw();
-		}
+		//　現在のシーン描画
+		scene_->Draw();
 	}
 }
 
-// 解放
-void SceneManager::Release(void)
+void SceneManager::Delete(void)
 {
-	//全てのシーンの解放・削除
-	for (auto& scene : scenes_)
-	{
-		scene->Release();
-	}
-	scenes_.clear();
+	// 現在のシーンの解放・削除
+	scene_->Release();
+	delete scene_;
 
 	// ロード画面の削除
-	Loading::GetInstance()->Release();
-	Loading::GetInstance()->DeleteInstance();
+	load_->Release();
+	delete load_;
 }
 
-// 状態遷移関数
-void SceneManager::ChangeScene(std::shared_ptr<SceneBase> scene)
+void SceneManager::ChangeScene(SCENE_ID nextId)
 {
-	// シーンが空か？
-	if (scenes_.empty())
+	// シーンを変更する
+	sceneId_ = nextId;
+
+	// 現在のシーンを解放
+	if (scene_ != nullptr)
 	{
-		//空なので新しく入れる
-		scenes_.push_back(scene);
+		scene_->Release();
+		delete scene_;
 	}
-	else
+
+	// 各シーンに切り替え
+	switch (sceneId_)
 	{
-		//末尾のものを新しい物に入れ替える
-		scenes_.back() = scene;
+	case SceneManager::SCENE_ID::NONE:
+		break;
+	case SceneManager::SCENE_ID::TITLE:
+		scene_ = new TitleScene();
+		break;
+	case SceneManager::SCENE_ID::GAME:
+		scene_ = new GameScene();
+		break;
+	default:
+		break;
 	}
 
 	// 読み込み(非同期)
-	Loading::GetInstance()->StartAsyncLoad();
-	scenes_.back()->Load();
-	Loading::GetInstance()->EndAsyncLoad();
-}
-
-void SceneManager::PushScene(std::shared_ptr<SceneBase> scene)
-{
-	//新しく積むのでもともと入っている奴はまだ削除されない
-	scene->Init();
-	scenes_.push_back(scene);
-}
-
-void SceneManager::PopScene(void)
-{
-	//積んであるものを消して、もともとあったものを末尾にする
-	if (scenes_.size() > 1)
-	{
-		scenes_.pop_back();
-	}
-}
-
-void SceneManager::JumpScene(std::shared_ptr<SceneBase> scene)
-{
-	// 全て解放
-	scenes_.clear();
-
-	// 新しく積む
-	scenes_.push_back(scene);
-}
-
-float SceneManager::GetDeltaTime(void) const
-{
-	return deltaTime_;
-	//return 1 / 60.0f;
-}
-
-Camera* SceneManager::GetCamera(void) const
-{
-	return camera_;
-}
-
-void SceneManager::ResetDeltaTime(void)
-{
-	deltaTime_ = 0.016f;
-	preTime_ = std::chrono::system_clock::now();
+	load_->StartAsyncLoad();
+	scene_->Load();
+	load_->EndAsyncLoad();
 }

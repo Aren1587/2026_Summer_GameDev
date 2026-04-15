@@ -59,6 +59,9 @@ public:
 	// ‰ñ“]‚ª­‚È‚¢•û‚Ì‰ñ“]Œü‚«‚ðŽæ“¾‚·‚é(ŽžŒv‰ñ‚è:1A”½ŽžŒv‰ñ‚è:-1)
 	static int DirNearAroundDeg(float from, float to);
 	
+	// Šp“x‚ð -ƒÎ ` +ƒÎ ‚É³‹K‰»
+	static float NormalizeAngle(float rad);
+
 	// üŒ`•âŠÔ
 	static int Lerp(int start, int end, float t);
 	static float Lerp(float start, float end, float t);
@@ -68,6 +71,9 @@ public:
 
 	// Šp“x‚ÌüŒ`•âŠÔ
 	static double LerpDeg(double start, double end, double t);
+
+	// Šp“x‚ÌüŒ`•âŠÔ(í‚ÉÅ’ZŒo˜H)
+	static float LerpAngle(float from, float to, float t);
 
 	// F‚ÌüŒ`•âŠÔ
 	static COLOR_F Lerp(const COLOR_F& start, const COLOR_F& end, float t);
@@ -83,7 +89,7 @@ public:
 	static double Magnitude(const Vector2& v);
 	static double Magnitude(const VECTOR& v);
 	static float MagnitudeF(const VECTOR& v);
-	static int SqrMagnitude(const Vector2& v);
+	static float SqrMagnitude(const Vector2& v);
 	static float SqrMagnitudeF(const VECTOR& v);
 	static double SqrMagnitude(const VECTOR& v);
 	static double SqrMagnitude(const VECTOR& v1, const VECTOR& v2);
@@ -105,7 +111,6 @@ public:
 
 	// ³‹K‰»
 	static VECTOR Normalize(const Vector2& v);
-	static Vector2 Normalize(const Vector2I& v);
 	static VECTOR VNormalize(const VECTOR& v);
 
 	// 2‚Â‚ÌƒxƒNƒgƒ‹‚ÌŠÔ‚ÌŠp“x
@@ -115,26 +120,5 @@ public:
 	static void DrawLineDir(const VECTOR& pos, const VECTOR& dir, int color, float len = 50.0f);
 	static void DrawLineXYZ(const VECTOR& pos, const Quaternion& rot, float len = 50.0f);
 
-	static float Dot(const VECTOR& a, const VECTOR& b);
-
-	static inline bool VZERO(const VECTOR& v)
-	{
-		return (v.x == 0.0f && v.y == 0.0f && v.z == 0.0f);
-	}
-
-	static float LerpAngle(float from, float to, float t);
-
-	static float NormalizeAngle(float rad)
-	{
-		while (rad > DX_PI)
-		{
-			rad -= DX_TWO_PI;
-		}
-		while (rad < -DX_PI)
-		{
-			rad += DX_TWO_PI;
-		}
-		return rad;
-	}
 };
 

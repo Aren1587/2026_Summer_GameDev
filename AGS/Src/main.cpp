@@ -1,11 +1,6 @@
 #include <DxLib.h>
-#include "Application.h"
 
-// NVIDIA Optimus / AMD Dual Graphics 対応用
-extern "C" {
-	__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;  // NVIDIA用
-	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1; // AMD用
-}
+#include "Application.h"
 
 // WinMain関数
 //---------------------------------
@@ -16,27 +11,27 @@ int WINAPI WinMain(
 
 	// インスタンスの生成
 	Application::CreateInstance();
+	Application::GetInstance()->Init();
 
-	// インスタンスの取得
-	Application& instance = Application::GetInstance();
-
-	if (instance.IsInitFail())
+	if (Application::GetInstance()->IsInitFail())
 	{
 		// 初期化失敗
 		return -1;
 	}
 
 	// 実行
-	instance.Run();
+	Application::GetInstance()->Run();
 
 	// 解放
-	instance.Destroy();
+	Application::GetInstance()->Delete();
 
-	if (instance.IsReleaseFail())
+	if (Application::GetInstance()->IsReleaseFail())
 	{
 		// 解放失敗
 		return -1;
 	}
+
+	Application::GetInstance()->DeleteInstance();
 
 	return 0;
 

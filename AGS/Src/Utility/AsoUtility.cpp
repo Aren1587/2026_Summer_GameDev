@@ -168,6 +168,19 @@ int AsoUtility::DirNearAroundDeg(float from, float to)
 
 }
 
+float AsoUtility::NormalizeAngle(float rad)
+{
+    while (rad > DX_PI_F)
+    {
+        rad -= DX_TWO_PI_F;
+    }
+    while (rad < -DX_PI_F)
+    {
+        rad += DX_TWO_PI_F;
+    }
+    return rad;
+}
+
 int AsoUtility::Lerp(int start, int end, float t)
 {
     // üŒ`•âŠÔ
@@ -270,6 +283,12 @@ double AsoUtility::LerpDeg(double start, double end, double t)
 
 }
 
+float AsoUtility::LerpAngle(float from, float to, float t)
+{
+    float diff = NormalizeAngle(to - from);  // Å’ZŒo˜H‚ÌŠp“x·‚ğŒvZ
+    return from + diff * t;                  // ·•ª‚¾‚¯•âŠÔ‚µ‚Ä‘«‚·
+}
+
 COLOR_F AsoUtility::Lerp(const COLOR_F& start, const COLOR_F& end, float t)
 {
     // üŒ`•âŠÔ
@@ -322,7 +341,7 @@ float AsoUtility::MagnitudeF(const VECTOR& v)
     return sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
 }
 
-int AsoUtility::SqrMagnitude(const Vector2& v)
+float AsoUtility::SqrMagnitude(const Vector2& v)
 {
     return v.x * v.x + v.y * v.y;
 }
@@ -469,18 +488,6 @@ VECTOR AsoUtility::Normalize(const Vector2& v)
     return ret;
 }
 
-Vector2 AsoUtility::Normalize(const Vector2I& v)
-{
-	Vector2 ret = Vector2(
-		static_cast<float>(v.x),
-		static_cast<float>(v.y)
-	);
-
-    if (ret == 0.0f) { return { 0.0f,0.0f }; }
-
-    return ret / static_cast<float>(Magnitude(ret));
-}
-
 VECTOR AsoUtility::VNormalize(const VECTOR& v)
 {
     if (AsoUtility::EqualsVZero(v))
@@ -546,12 +553,4 @@ void AsoUtility::DrawLineXYZ(const VECTOR& pos, const Quaternion& rot, float len
 
 }
 
-float AsoUtility::Dot(const VECTOR& a, const VECTOR& b) {
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-}
 
-float AsoUtility::LerpAngle(float from, float to, float t)
-{
-    float diff = NormalizeAngle(to - from); // Å’ZŒo˜H‚ÌŠp“x·‚ğŒvZ
-    return from + diff * t; // ·•ª‚¾‚¯•âŠÔ‚µ‚Ä‘«‚·
-}

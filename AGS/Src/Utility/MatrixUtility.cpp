@@ -1,11 +1,12 @@
 #include "MatrixUtility.h"
+
 MATRIX MatrixUtility::GetMatrixRotateXYZ(const VECTOR& euler)
 {
 	MATRIX ret = MGetIdent();
 	ret = MMult(ret, MGetRotX(euler.x));
 	ret = MMult(ret, MGetRotY(euler.y));
 	ret = MMult(ret, MGetRotZ(euler.z));
-	return ret;
+    return ret;
 }
 
 MATRIX MatrixUtility::Multiplication(const MATRIX& child, const MATRIX& parent)
@@ -15,7 +16,7 @@ MATRIX MatrixUtility::Multiplication(const MATRIX& child, const MATRIX& parent)
 
 MATRIX MatrixUtility::Multiplication(const VECTOR& childEuler, const VECTOR& parentEuler)
 {
-	MATRIX childMat = GetMatrixRotateXYZ(childEuler);
-	MATRIX parentMat = GetMatrixRotateXYZ(parentEuler);
-	return MMult(childMat, parentMat);
+	MATRIX parent = MatrixUtility::GetMatrixRotateXYZ(parentEuler);
+	MATRIX child = MatrixUtility::GetMatrixRotateXYZ(childEuler);
+	return MMult(child, parent);
 }

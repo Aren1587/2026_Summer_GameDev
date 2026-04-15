@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 
+// クラスの前方宣言
 class FpsControl;
 
 class Application
@@ -12,10 +13,6 @@ public:
 	static constexpr int SCREEN_SIZE_X = 1024;
 	static constexpr int SCREEN_SIZE_Y = 640;
 
-	static constexpr int FPS = 60;                           // 固定FPS
-	static constexpr int OneFrameTime = 1000 / FPS;          // 1フレームあたりのms (約16ms)
-
-
 	// データパス関連
 	//-------------------------------------------
 	static const std::string PATH_DATA;
@@ -24,35 +21,44 @@ public:
 	static const std::string PATH_EFFECT;
 	//-------------------------------------------
 
-	// インスタンスを明示的に生成
-	static void CreateInstance(void);
-
-	// インスタンスの取得
-	static Application& GetInstance(void);
-
-	// 初期化
-	void Init(void);
-
-	// ゲームループの開始
-	void Run(void);
-
-	// リソースの破棄
-	void Destroy(void);
-
-	// 初期化成功／失敗の判定
-	bool IsInitFail(void) const;
-
-	// 解放成功／失敗の判定
-	bool IsReleaseFail(void) const;
-
-	// エフェクシアの初期化
-	void InitEffekseer(void);
+public:
+	// シングルトン（生成・取得・削除）
+	static void CreateInstance(void) { if (instance_ == nullptr) { instance_ = new Application(); } }
+	static Application* GetInstance(void) { return instance_; }
+	static void DeleteInstance(void) { if (instance_ != nullptr) delete instance_; instance_ = nullptr; }
 
 private:
-
-
 	// 静的インスタンス
 	static Application* instance_;
+
+	// デフォルトコンストラクタをprivateにして、
+	// 外部から生成できない様にする
+	Application(void);
+
+	// デストラクタも同様
+	~Application(void);
+
+	// コピー・ムーブ操作を禁止
+	Application(const Application&) = delete;
+	Application& operator=(const Application&) = delete;
+	Application(Application&&) = delete;
+	Application& operator=(Application&&) = delete;
+
+	// 下記をコンパイルエラーさせるため 上記を追加
+	// Application copy = *Application::GetInstance();
+	// Application copied(*Application::GetInstance());
+	// Application moved = std::move(*Application::GetInstance());
+
+public:
+
+	void Init(void);		// 初期化
+	void Run(void);			// ゲームループの開始
+	void Delete(void);		// リソースの破棄
+	
+	bool IsInitFail(void) const;	// 初期化成功／失敗の判定
+	bool IsReleaseFail(void) const;	// 解放成功／失敗の判定
+
+private:
 
 	// 初期化失敗
 	bool isInitFail_;
@@ -60,16 +66,6 @@ private:
 	// 解放失敗
 	bool isReleaseFail_;
 
-	// デフォルトコンストラクタをprivateにして、
-	// 外部から生成できない様にする
-	Application(void);
-
-	// コピーコンストラクタも同様
-	Application(const Application& instance) = default;
-
-	// デストラクタも同様
-	~Application(void) = default;
-
-	// FPS制御クラス
+	// FPS
 	FpsControl* fps_;
 };
