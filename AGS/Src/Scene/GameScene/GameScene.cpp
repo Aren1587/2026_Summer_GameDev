@@ -116,6 +116,17 @@ void GameScene::Draw(void)
 		// XVˆ—
 		actor->Draw();
 	}
+
+	int screen1 = MakeScreen(320, 240, false);
+	int screen2 = MakeScreen(320, 240, false);
+
+	SetDrawScreen(screen1);
+	SetDrawScreen(screen2);
+
+	SetDrawScreen(DX_SCREEN_BACK);
+
+	DrawExtendGraph(0, 0, 320, 240, screen1, true);
+	DrawExtendGraph(320, 0, 640, 240, screen2, true);
 }
 
 void GameScene::Release(void)
