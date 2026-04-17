@@ -56,7 +56,7 @@ void GameScene::Load(void)
 	camera2_->SetFollow(player2_);
 	camera1_->ChangeMode(Camera::MODE::FOLLOW);
 	camera2_->ChangeMode(Camera::MODE::FOLLOW);
-	SetCameraScreenCenter(0.0f, 240.0f);
+	SetCameraScreenCenter(1000.0f, 240.0f);
 	// ステージの読み込み
 	stage_->Load();
 
