@@ -22,8 +22,12 @@ public:
 	void Release(void)	override;	// 解放
 
 private:
+	static constexpr int CAMERA_NUM = 2;
+
 	// カメラ
-	Camera* camera_;
+	std::vector<Camera*> camera_;
+	Camera* camera1_;
+	Camera* camera2_;
 
 	// ステージ
 	Stage* stage_;

@@ -22,7 +22,8 @@ GameScene::~GameScene(void)
 void GameScene::Init(void)
 {
 	// カメラの初期化
-	camera_->Init();
+	camera1_->Init();
+	camera2_->Init();
 
 	// ステージ初期化
 	stage_->Init();
@@ -38,19 +39,24 @@ void GameScene::Init(void)
 void GameScene::Load(void)
 {
 	// 生成処理
-	camera_ = new Camera();					// カメラの生成
+	camera1_ = new Camera();					// カメラの生成
+	camera2_ = new Camera();					// カメラの生成
 	stage_ = new Stage();					// ステージの生成
-	Player* player_ = new Player(camera_);	// プレイヤーの生成
-	Enemy* enemy_ = new Enemy(player_);		// 敵の生成
+	Player* player1_ = new Player(camera1_);	// プレイヤーの生成
+	Player* player2_ = new Player(camera2_);	// プレイヤーの生成
+	Enemy* enemy_ = new Enemy(player1_);		// 敵の生成
 
 	// アクター配列に入れる
-	allActor_.push_back(player_);
+	allActor_.push_back(player1_);
+	allActor_.push_back(player2_);
 	allActor_.push_back(enemy_);
 
 	// カメラモード変更
-	camera_->SetFollow(player_);
-	camera_->ChangeMode(Camera::MODE::FOLLOW);
-
+	camera1_->SetFollow(player1_);
+	camera2_->SetFollow(player2_);
+	camera1_->ChangeMode(Camera::MODE::FOLLOW);
+	camera2_->ChangeMode(Camera::MODE::FOLLOW);
+	SetCameraScreenCenter(0.0f, 240.0f);
 	// ステージの読み込み
 	stage_->Load();
 
@@ -65,7 +71,7 @@ void GameScene::Load(void)
 void GameScene::LoadEnd(void)
 {
 	// カメラの初期化
-	camera_->Init();
+	camera1_->Init();
 
 	// ステージ初期化
 	stage_->LoadEnd();
@@ -81,7 +87,7 @@ void GameScene::LoadEnd(void)
 void GameScene::Update(void)
 {
 	// カメラの更新
-	camera_->Update();
+	camera1_->Update();
 
 	// ステージ更新
 	stage_->Update();
@@ -105,7 +111,7 @@ void GameScene::Update(void)
 void GameScene::Draw(void)
 {
 	// カメラの描画更新
-	camera_->SetBeforeDraw();
+	camera1_->SetBeforeDraw();
 
 	// ステージ描画
 	stage_->Draw();
@@ -117,16 +123,16 @@ void GameScene::Draw(void)
 		actor->Draw();
 	}
 
-	int screen1 = MakeScreen(320, 240, false);
-	int screen2 = MakeScreen(320, 240, false);
+	//int screen1 = MakeScreen(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2, false);
+	////int screen2 = MakeScreen(320, 240, false);
 
-	SetDrawScreen(screen1);
-	SetDrawScreen(screen2);
+	//SetDrawScreen(screen1);
+	////SetDrawScreen(screen2);
 
-	SetDrawScreen(DX_SCREEN_BACK);
+	//SetDrawScreen(DX_SCREEN_BACK);
 
-	DrawExtendGraph(0, 0, 320, 240, screen1, true);
-	DrawExtendGraph(320, 0, 640, 240, screen2, true);
+	//DrawExtendGraph(0, 0, Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, screen1, true);
+	////DrawExtendGraph(320, 0, 640, 240, screen2, true);
 }
 
 void GameScene::Release(void)
