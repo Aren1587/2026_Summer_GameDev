@@ -34,6 +34,8 @@ public:
 	// 解放
 	void Release(void) override;
 
+	void SetNo(int no) { playerNo_ = no; }
+
 private:
 
 	// リソース読込
@@ -51,10 +53,15 @@ private:
 	// 移動制御
 	void Move(void) override;
 
+	void SetPlayerNo(int no) { playerNo_ = no; }
+
 private:
 	// カメラ
 	Camera* camera_;
 
 	// プレイヤー番号（1 or 2）
 	int playerNo_;
+
+	int movePlayerNo_;
+	int downKey_, hitKey_;
 };

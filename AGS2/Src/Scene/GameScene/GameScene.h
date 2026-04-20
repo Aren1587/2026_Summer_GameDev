@@ -37,6 +37,7 @@ private:
 	std::vector<Camera*> camera_;
 	Camera* camera1_;
 	Camera* camera2_;
+	Camera* camera3_;
 
 	// ステージ
 	Stage* stage_;
