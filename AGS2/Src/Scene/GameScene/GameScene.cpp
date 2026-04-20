@@ -1,0 +1,296 @@
+#include "GameScene.h"
+
+#include <DxLib.h>
+
+#include "../../Application.h"
+#include "../../Camera/Camera.h"
+
+#include "../../Object/Actor/ActorBase.h"
+#include "../../Object/Actor/Player/Player.h"
+#include "../../Object/Actor/Enemy/Enemy.h"
+
+#include "../../Object/Actor/Stage/Stage.h"
+
+GameScene::GameScene(void)
+{
+}
+
+GameScene::~GameScene(void)
+{
+}
+
+void GameScene::Init(void)
+{
+	// カメラの初期化
+	camera1_->Init();
+	camera2_->Init();
+
+	// ステージ初期化
+	stage_->Init();
+
+	// 全てのアクターを初期化
+	for (auto actor : allActor_)
+	{
+		// 初期化
+		actor->Init();
+	}
+}
+
+void GameScene::Load(void)
+{
+	// 生成処理
+	camera1_ = new Camera();					// カメラの生成
+	camera2_ = new Camera();					// カメラの生成
+	stage_ = new Stage();						// ステージの生成
+	Player* player1_ = new Player(camera1_, 1);	// プレイヤー1の生成
+	Player* player2_ = new Player(camera2_, 2);	// プレイヤー2の生成
+	Enemy* enemy_ = new Enemy(player1_);		// 敵の生成
+
+	// アクター配列に入れる
+	allActor_.push_back(player1_);
+	allActor_.push_back(player2_);
+	allActor_.push_back(enemy_);
+
+	// カメラモード変更
+	camera1_->SetFollow(player1_);
+	camera2_->SetFollow(player2_);
+	camera1_->ChangeMode(Camera::MODE::FOLLOW);
+	camera2_->ChangeMode(Camera::MODE::FOLLOW);
+	SetCameraScreenCenter(0.0f, 240.0f);
+	// ステージの読み込み
+	stage_->Load();
+
+	// 全てのアクターを読み込み
+	for (auto actor : allActor_)
+	{
+		// 読み込み
+		actor->Load();
+	}
+}
+
+void GameScene::LoadEnd(void)
+{
+	// 両方のカメラの初期化
+	camera1_->Init();
+	camera2_->Init();
+
+	// ステージ初期化
+	stage_->LoadEnd();
+
+	// 全てのアクターを読み込み後
+	for (auto actor : allActor_)
+	{
+		// 読み込み
+		actor->LoadEnd();
+	}
+}
+
+void GameScene::Update(void)
+{
+	// 両方のカメラを更新
+	camera1_->Update();
+	camera2_->Update();
+
+	// ステージ更新
+	stage_->Update();
+
+	// 全てのアクターを回す
+	for (auto actor : allActor_)
+	{
+		// 更新処理
+		actor->Update();
+
+		// 当たり判定を取るか？
+		if (actor)
+		{
+			// 当たり判定
+			//FieldCollision(actor);
+			WallCollision(actor);
+		}
+	}
+}
+
+void GameScene::Draw(void)
+{
+	// 左半分用のスクリーンを作成
+	int screen1 = MakeScreen(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, false);
+	// 右半分用のスクリーンを作成
+	int screen2 = MakeScreen(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, false);
+	// 上
+	int screen3 = MakeScreen(Application::SCREEN_SIZE_X / 4, Application::SCREEN_SIZE_Y / 4, false);
+
+	// 左画面の描画
+	SetDrawScreen(screen1);
+	ClearDrawScreen();
+
+	// カメラ1の描画更新
+	camera1_->SetBeforeDraw();
+
+	// ステージ描画
+	stage_->Draw();
+
+	// 全てのアクターを描画
+	for (auto actor : allActor_)
+	{
+		actor->Draw();
+	}
+
+	// === 右画面の描画 ===
+	SetDrawScreen(screen2);
+	ClearDrawScreen();
+
+	// カメラ2の描画更新
+	camera2_->SetBeforeDraw();
+
+	// ステージ描画
+	stage_->Draw();
+
+	// 全てのアクターを描画
+	for (auto actor : allActor_)
+	{
+		actor->Draw();
+	}
+
+	// === 右画面の描画 ===
+	SetDrawScreen(screen3);
+	ClearDrawScreen();
+
+	// カメラ2の描画更新
+	camera2_->SetBeforeDraw();
+
+	// ステージ描画
+	stage_->Draw();
+
+	// 全てのアクターを描画
+	for (auto actor : allActor_)
+	{
+		actor->Draw();
+	}
+
+
+	// === 画面に合成 ===
+	SetDrawScreen(DX_SCREEN_BACK);
+
+	// 左半分に screen1 を描画
+	DrawExtendGraph(0, 0, Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, screen1, true);
+	// 右半分に screen2 を描画
+	DrawExtendGraph(Application::SCREEN_SIZE_X / 2, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, screen2, true);
+
+	DrawExtendGraph(Application::SCREEN_SIZE_X / 4, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, screen2, true);
+
+	// スクリーンを削除
+	DeleteGraph(screen1);
+	DeleteGraph(screen2);
+}
+
+void GameScene::Release(void)
+{
+	// カメラ解放
+	delete camera1_;
+	delete camera2_;
+
+	// ステージ解放
+	stage_->Release();
+	delete stage_;
+
+	// 全てのアクターを回す
+	for (auto actor : allActor_)
+	{
+		// 更新処理
+		actor->Release();
+		delete actor;
+	}
+
+	// 配列をクリア
+	allActor_.clear();
+}
+
+// ステージの床とプレイヤーの衝突
+void GameScene::FieldCollision(ActorBase* actor)
+{
+	// 座標を所得
+	VECTOR actorPos = actor->GetPos();
+
+	// 線分の上座標
+	VECTOR startPos = actorPos;
+	startPos.y = actorPos.y + 10.0f;
+
+	// 線分の下座標
+	VECTOR endPos = actorPos;
+	endPos.y = actorPos.y - 10.0f;
+
+	// ステージのモデルを取得
+	int modelId = stage_->GetModelId();
+
+	// 線分とモデルの衝突判定
+	MV1_COLL_RESULT_POLY res =
+		MV1CollCheck_Line(modelId, -1, startPos, endPos);
+
+	// ステージに当たっているか？
+	if (res.HitFlag)
+	{
+		// 当たった場所に戻す
+		actor->CollisionStage(res.HitPosition);
+	}
+}
+
+void GameScene::WallCollision(ActorBase* actor)
+{
+	// 座標を取得
+	VECTOR pos = actor->GetPos();
+
+	// カプセルの座標
+	VECTOR capStartPos = VAdd(pos, actor->GetStartCapsulePos());
+	VECTOR capEndPos = VAdd(pos, actor->GetEndCapsulePos());
+
+	// カプセルとの当たり判定
+	auto hits = MV1CollCheck_Capsule
+	(
+		stage_->GetModelId(),			// ステージのモデルID
+		-1,								// ステージ全てのポリゴンを指定
+		capStartPos,					// カプセルの上
+		capEndPos,						// カプセルの下
+		actor->GetCapsuleRadius()		// カプセルの半径
+	);
+
+	// 衝突したポリゴン全ての検索
+	for (int i = 0; i < hits.HitNum; i++)
+	{
+		// ポリゴンを1枚に分割
+		auto hit = hits.Dim[i];
+
+		// ポリゴン検索を制限(全てを検索すると重いので)
+		for (int tryCnt = 0; tryCnt < 10; tryCnt++)
+		{
+			// 最初の衝突判定で検出した衝突ポリゴン1枚と衝突判定を取る
+			int pHit = HitCheck_Capsule_Triangle
+			(
+				capStartPos,					// カプセルの上
+				capEndPos,						// カプセルの下
+				actor->GetCapsuleRadius(),		// カプセルの半径
+				hit.Position[0],				// ポリゴン1
+				hit.Position[1],				// ポリゴン2
+				hit.Position[2]					// ポリゴン3
+			);
+
+			// カプセルとポリゴンが当たっていた
+			if (pHit)
+			{
+				// 当たっていたので座標をポリゴンの法線方向に移動させる
+				pos = VAdd(pos, VScale(hit.Normal, 1.0f));
+
+				// 球体の座標も移動させる
+				capStartPos = VAdd(capStartPos, VScale(hit.Normal, 1.0f));
+				capEndPos = VAdd(capEndPos, VScale(hit.Normal, 1.0f));
+
+				// 複数当たっている可能性があるので再検索
+				continue;
+			}
+		}
+	}
+	// 検出したポリゴン情報の後始末
+	MV1CollResultPolyDimTerminate(hits);
+
+	// 計算した場所にアクターを戻す
+	actor->CollisionStage(pos);
+}
