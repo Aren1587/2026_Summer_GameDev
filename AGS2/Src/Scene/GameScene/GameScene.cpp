@@ -117,7 +117,7 @@ void GameScene::Draw(void)
 	// 右半分用のスクリーンを作成
 	int screen2 = MakeScreen(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, false);
 	// 上
-	int screen3 = MakeScreen(Application::SCREEN_SIZE_X / 4, Application::SCREEN_SIZE_Y / 4, false);
+	//int screen3 = MakeScreen(Application::SCREEN_SIZE_X / 4, Application::SCREEN_SIZE_Y / 4, false);
 
 	// 左画面の描画
 	SetDrawScreen(screen1);
@@ -151,21 +151,21 @@ void GameScene::Draw(void)
 		actor->Draw();
 	}
 
-	// === 右画面の描画 ===
-	SetDrawScreen(screen3);
-	ClearDrawScreen();
+	//// === 右画面の描画 ===
+	//SetDrawScreen(screen3);
+	//ClearDrawScreen();
 
-	// カメラ2の描画更新
-	camera2_->SetBeforeDraw();
+	//// カメラ2の描画更新
+	//camera2_->SetBeforeDraw();
 
-	// ステージ描画
-	stage_->Draw();
+	//// ステージ描画
+	//stage_->Draw();
 
-	// 全てのアクターを描画
-	for (auto actor : allActor_)
-	{
-		actor->Draw();
-	}
+	//// 全てのアクターを描画
+	//for (auto actor : allActor_)
+	//{
+	//	actor->Draw();
+	//}
 
 
 	// === 画面に合成 ===
@@ -176,7 +176,7 @@ void GameScene::Draw(void)
 	// 右半分に screen2 を描画
 	DrawExtendGraph(Application::SCREEN_SIZE_X / 2, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, screen2, true);
 
-	DrawExtendGraph(Application::SCREEN_SIZE_X / 4, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, screen2, true);
+	//DrawExtendGraph(Application::SCREEN_SIZE_X / 4, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, screen2, true);
 
 	// スクリーンを削除
 	DeleteGraph(screen1);
