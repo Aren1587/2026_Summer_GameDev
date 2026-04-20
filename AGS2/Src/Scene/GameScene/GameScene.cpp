@@ -27,6 +27,7 @@ void GameScene::Init(void)
 	// カメラの初期化
 	camera1_->Init();
 	camera2_->Init();
+	camera3_->Init();
 
 	// 各ステージ初期化
 	for (int i = 0; i < WORLD_NUM; ++i) {
@@ -44,9 +45,11 @@ void GameScene::Load(void)
 	// カメラ生成
 	camera1_ = new Camera();
 	camera2_ = new Camera();
+	camera3_ = new Camera();
+
 
 	// ステージを3つ生成・ロード
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < WORLD_NUM; ++i) {
 		stages_[i] = new Stage();
 		stages_[i]->Load();
 	}
@@ -65,6 +68,7 @@ void GameScene::Load(void)
 	camera2_->SetFollow(players_[1]);
 	camera1_->ChangeMode(Camera::MODE::FOLLOW);
 	camera2_->ChangeMode(Camera::MODE::FOLLOW);
+	camera3_->ChangeMode(Camera::MODE::FIXED_POINT);
 	SetCameraScreenCenter(0.0f, 240.0f);
 
 	// 全てのアクターを読み込み
@@ -85,7 +89,7 @@ void GameScene::LoadEnd(void)
 	// 全てのアクターを読み込み後
 	for (auto actor : allActor_)
 	{
-		// 読み込み
+	 	// 読み込み
 		actor->LoadEnd();
 	}
 }
@@ -107,12 +111,14 @@ void GameScene::Update(void)
 			WallCollision(actor);
 		}
 	}
+	
 }
 
 void GameScene::Draw(void)
 {
 	int screen1 = MakeScreen(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, false);
 	int screen2 = MakeScreen(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, false);
+	int screen3 = MakeScreen(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, false);//Application::SCREEN_SIZE_X / 4, Application::SCREEN_SIZE_Y, false);
 
 	// 左画面（間違い1の世界）
 	SetDrawScreen(screen1);
@@ -128,12 +134,22 @@ void GameScene::Draw(void)
 	stages_[2]->Draw();
 	players_[1]->Draw();
 
+	// 上画面（正解の世界）
+	SetDrawScreen(screen3);
+	ClearDrawScreen();
+	camera3_->SetBeforeDraw();
+	stages_[0]->Draw();
+
 	SetDrawScreen(DX_SCREEN_BACK);
 	DrawExtendGraph(0, 0, Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, screen1, true);
 	DrawExtendGraph(Application::SCREEN_SIZE_X / 2, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, screen2, true);
+	//DrawExtendGraph(((Application::SCREEN_SIZE_X / 2) - (Application::SCREEN_SIZE_X / 4)), 0,
+		//((Application::SCREEN_SIZE_X / 2) + (Application::SCREEN_SIZE_X / 4)), Application::SCREEN_SIZE_Y / 3, screen3, true);
+
 
 	DeleteGraph(screen1);
 	DeleteGraph(screen2);
+	DeleteGraph(screen3);
 
 }
 

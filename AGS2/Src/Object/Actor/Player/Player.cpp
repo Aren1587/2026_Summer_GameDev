@@ -75,6 +75,7 @@ void Player::InitAnimation(void)
 
 void Player::InitPost(void)
 {
+	downKey_ = hitKey_ = 0;
 }
 
 void Player::Update(void)
@@ -124,25 +125,19 @@ void Player::Move(void)
 		if (InputManager::GetInstance()->IsNew(KEY_INPUT_S)) { dir = { 0.0f, 0.0f, -1.0f }; }
 		if (InputManager::GetInstance()->IsNew(KEY_INPUT_D)) { dir = { 1.0f, 0.0f, 0.0f }; }
 	}
-	else if (playerNo_ == 2)
-	{
-		// プレイヤー2：ゲームパッド1 または 矢印キー
-		if (GetJoypadNum() > 0)
-		{
-			// ゲームパッド1を使用
-			InputManager::JOYPAD_IN_STATE padState =
-				InputManager::GetInstance()->GetJPadInputState(InputManager::JOYPAD_NO::PAD1);
 
-			// アナログキーの入力値を方向として取得
-			dir = InputManager::GetInstance()->GetDirectionXZAKey(padState.AKeyLX, padState.AKeyLY);
+	downKey_ = hitKey_;
+	hitKey_ = GetMouseInput();
+
+	if ((downKey_ != hitKey_) != 0)
+	{
+		if (playerNo_ == 1)
+		{
+			playerNo_ = 2;
 		}
 		else
 		{
-			// 矢印キーで操作
-			if (InputManager::GetInstance()->IsNew(KEY_INPUT_U)) { dir = { 0.0f, 0.0f, 1.0f }; }
-			if (InputManager::GetInstance()->IsNew(KEY_INPUT_H)) { dir = { -1.0f, 0.0f, 0.0f }; }
-			if (InputManager::GetInstance()->IsNew(KEY_INPUT_J)) { dir = { 0.0f, 0.0f, -1.0f }; }
-			if (InputManager::GetInstance()->IsNew(KEY_INPUT_K)) { dir = { 1.0f, 0.0f, 0.0f }; }
+			playerNo_ = 1;
 		}
 	}
 
