@@ -39,6 +39,18 @@
 
 # debug information files
 *.dwo
+<<<<<<< HEAD
+AGS/.vs/AGS/CopilotIndices/17.14.1584.41681/CodeChunks.db-shm
+AGS/.vs/AGS/CopilotIndices/17.14.1584.41681/CodeChunks.db-wal
+AGS/.vs/AGS/CopilotIndices/17.14.1584.41681/SemanticSymbols.db-shm
+AGS/.vs/AGS/CopilotIndices/17.14.1584.41681/SemanticSymbols.db-wal
+AGS/.vs/AGS/v17/Browse.VC.db-shm
+AGS/.vs/AGS/v17/Browse.VC.db-wal
+AGS/.vs/AGS/v17/Browse.VC.opendb
+=======
 *.recipe
 AGS/.vs/
 AGS/Project1/x64/
+>>>>>>> d09734daa5f39f4e08c5f1ab8f8090a0b0c29f01
+AGS2/x64/
+AGS2/.vs/
