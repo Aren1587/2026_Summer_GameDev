@@ -1,4 +1,5 @@
-﻿  GameScene.cpp
-  SceneManager.cpp
+﻿  Enemy.cpp
+  GameScene.cpp
+  Player.cpp
   コードを生成中...
   BaseProject.vcxproj -> C:\AGS\AGS\x64\Debug\BaseProject.exe

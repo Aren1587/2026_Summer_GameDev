@@ -11,7 +11,7 @@ class Player : public ActorBase
 
 public:
 
-	// アニメーション種別
+	// アニメーション種類
 	enum class ANIM_TYPE
 	{
 		IDLE,
@@ -19,8 +19,8 @@ public:
 		MAX,
 	};
 
-	// コンストラクタ
-	Player(Camera* camera);
+	// コンストラクタ（プレイヤー番号を追加）
+	Player(Camera* camera, int playerNo);
 
 	// デストラクタ
 	~Player(void) override;
@@ -36,7 +36,7 @@ public:
 
 private:
 
-	// リソースロード
+	// リソース読込
 	void InitLoad(void) override;
 
 	// 大きさ、回転、座標の初期化
@@ -45,13 +45,16 @@ private:
 	// アニメーションの初期化
 	void InitAnimation(void) override;
 
-	// 初期化後の個別処理
+	// 読み込み後の後処理
 	void InitPost(void) override;
 
-	// 移動処理
+	// 移動制御
 	void Move(void) override;
 
 private:
 	// カメラ
 	Camera* camera_;
+
+	// プレイヤー番号（1 or 2）
+	int playerNo_;
 };

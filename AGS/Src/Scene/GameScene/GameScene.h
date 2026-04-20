@@ -31,6 +31,7 @@ private:
 
 	// ステージ
 	Stage* stage_;
+	std::vector<Stage*> allStage_;
 
 	// 全てのアクター
 	std::vector<ActorBase*> allActor_;

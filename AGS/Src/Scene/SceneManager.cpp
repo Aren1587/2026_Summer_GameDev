@@ -64,7 +64,7 @@ void SceneManager::Update(void)
 	// ロード中
 	if (load_->IsLoading())
 	{
-		// ロード更新
+		// ロード更新	
 		load_->Update();
 
 		// ロードの更新が終了していたら
@@ -139,5 +139,6 @@ void SceneManager::ChangeScene(SCENE_ID nextId)
 	// 読み込み(非同期)
 	load_->StartAsyncLoad();
 	scene_->Load();
+	scene_->Init();
 	load_->EndAsyncLoad();
 }

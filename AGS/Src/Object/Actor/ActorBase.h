@@ -30,6 +30,8 @@ public:
 	// ステージと衝突
 	void CollisionStage(const VECTOR& pos);
 
+	void SetPosition(VECTOR pos) { pos_ = pos; }
+
 protected:
 
 	// アニメーション制御
