@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Prerequisites
 *.d
 
@@ -54,3 +55,7 @@ AGS/Project1/x64/
 >>>>>>> d09734daa5f39f4e08c5f1ab8f8090a0b0c29f01
 AGS2/x64/
 AGS2/.vs/
+=======
+AGS/x64/
+AGS/.vs/
+>>>>>>> nao
