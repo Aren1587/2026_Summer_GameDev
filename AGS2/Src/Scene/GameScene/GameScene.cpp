@@ -1,22 +1,25 @@
 #include "GameScene.h"
-
 #include <DxLib.h>
-
 #include "../../Application.h"
 #include "../../Camera/Camera.h"
-
 #include "../../Object/Actor/ActorBase.h"
 #include "../../Object/Actor/Player/Player.h"
 #include "../../Object/Actor/Enemy/Enemy.h"
-
 #include "../../Object/Actor/Stage/Stage.h"
 
 GameScene::GameScene(void)
 {
+	stage_ = new Stage();
+	stage_->Load();
 }
 
 GameScene::~GameScene(void)
 {
+	if (stage_) {
+		stage_->Release();
+		delete stage_;
+		stage_ = nullptr;
+	}
 }
 
 void GameScene::Init(void)
@@ -25,45 +28,47 @@ void GameScene::Init(void)
 	camera1_->Init();
 	camera2_->Init();
 
-	// ステージ初期化
-	stage_->Init();
+	// 各ステージ初期化
+	for (int i = 0; i < WORLD_NUM; ++i) {
+		stages_[i]->Init();
+	}
 
-	// 全てのアクターを初期化
-	for (auto actor : allActor_)
-	{
-		// 初期化
+	// 全アクター初期化
+	for (auto actor : allActor_) {
 		actor->Init();
 	}
 }
 
 void GameScene::Load(void)
 {
-	// 生成処理
-	camera1_ = new Camera();					// カメラの生成
-	camera2_ = new Camera();					// カメラの生成
-	stage_ = new Stage();						// ステージの生成
-	Player* player1_ = new Player(camera1_, 1);	// プレイヤー1の生成
-	Player* player2_ = new Player(camera2_, 2);	// プレイヤー2の生成
-	Enemy* enemy_ = new Enemy(player1_);		// 敵の生成
+	// カメラ生成
+	camera1_ = new Camera();
+	camera2_ = new Camera();
 
-	// アクター配列に入れる
-	allActor_.push_back(player1_);
-	allActor_.push_back(player2_);
-	allActor_.push_back(enemy_);
+	// ステージを3つ生成・ロード
+	for (int i = 0; i < 3; ++i) {
+		stages_[i] = new Stage();
+		stages_[i]->Load();
+	}
+
+	// プレイヤー生成
+	players_[0] = new Player(camera1_, 1); // 間違い1の世界
+	players_[1] = new Player(camera2_, 2); // 間違い2の世界
+
+	// アクター配列に追加
+	for (int i = 0; i < PLAYER_NUM; ++i) {
+		allActor_.push_back(players_[i]);
+	}
 
 	// カメラモード変更
-	camera1_->SetFollow(player1_);
-	camera2_->SetFollow(player2_);
+	camera1_->SetFollow(players_[0]);
+	camera2_->SetFollow(players_[1]);
 	camera1_->ChangeMode(Camera::MODE::FOLLOW);
 	camera2_->ChangeMode(Camera::MODE::FOLLOW);
 	SetCameraScreenCenter(0.0f, 240.0f);
-	// ステージの読み込み
-	stage_->Load();
 
 	// 全てのアクターを読み込み
-	for (auto actor : allActor_)
-	{
-		// 読み込み
+	for (auto actor : allActor_) {
 		actor->Load();
 	}
 }
@@ -87,24 +92,18 @@ void GameScene::LoadEnd(void)
 
 void GameScene::Update(void)
 {
-	// 両方のカメラを更新
 	camera1_->Update();
 	camera2_->Update();
 
-	// ステージ更新
-	stage_->Update();
+	// 各ステージ更新
+	for (int i = 0; i < WORLD_NUM; ++i) {
+		stages_[i]->Update();
+	}
 
-	// 全てのアクターを回す
-	for (auto actor : allActor_)
-	{
-		// 更新処理
+	// 全アクター更新
+	for (auto actor : allActor_) {
 		actor->Update();
-
-		// 当たり判定を取るか？
-		if (actor)
-		{
-			// 当たり判定
-			//FieldCollision(actor);
+		if (actor) {
 			WallCollision(actor);
 		}
 	}
@@ -112,96 +111,51 @@ void GameScene::Update(void)
 
 void GameScene::Draw(void)
 {
-	// 左半分用のスクリーンを作成
 	int screen1 = MakeScreen(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, false);
-	// 右半分用のスクリーンを作成
 	int screen2 = MakeScreen(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, false);
-	// 上
-	//int screen3 = MakeScreen(Application::SCREEN_SIZE_X / 4, Application::SCREEN_SIZE_Y / 4, false);
 
-	// 左画面の描画
+	// 左画面（間違い1の世界）
 	SetDrawScreen(screen1);
 	ClearDrawScreen();
-
-	// カメラ1の描画更新
 	camera1_->SetBeforeDraw();
+	stages_[1]->Draw();
+	players_[0]->Draw();
 
-	// ステージ描画
-	stage_->Draw();
-
-	// 全てのアクターを描画
-	for (auto actor : allActor_)
-	{
-		actor->Draw();
-	}
-
-	// === 右画面の描画 ===
+	// 右画面（間違い2の世界）
 	SetDrawScreen(screen2);
 	ClearDrawScreen();
-
-	// カメラ2の描画更新
 	camera2_->SetBeforeDraw();
+	stages_[2]->Draw();
+	players_[1]->Draw();
 
-	// ステージ描画
-	stage_->Draw();
-
-	// 全てのアクターを描画
-	for (auto actor : allActor_)
-	{
-		actor->Draw();
-	}
-
-	//// === 右画面の描画 ===
-	//SetDrawScreen(screen3);
-	//ClearDrawScreen();
-
-	//// カメラ2の描画更新
-	//camera2_->SetBeforeDraw();
-
-	//// ステージ描画
-	//stage_->Draw();
-
-	//// 全てのアクターを描画
-	//for (auto actor : allActor_)
-	//{
-	//	actor->Draw();
-	//}
-
-
-	// === 画面に合成 ===
 	SetDrawScreen(DX_SCREEN_BACK);
-
-	// 左半分に screen1 を描画
 	DrawExtendGraph(0, 0, Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, screen1, true);
-	// 右半分に screen2 を描画
 	DrawExtendGraph(Application::SCREEN_SIZE_X / 2, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, screen2, true);
 
-	//DrawExtendGraph(Application::SCREEN_SIZE_X / 4, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, screen2, true);
-
-	// スクリーンを削除
 	DeleteGraph(screen1);
 	DeleteGraph(screen2);
+
 }
 
 void GameScene::Release(void)
 {
-	// カメラ解放
 	delete camera1_;
 	delete camera2_;
 
 	// ステージ解放
-	stage_->Release();
-	delete stage_;
+	for (int i = 0; i < WORLD_NUM; ++i) {
+		if (stages_[i]) {
+			stages_[i]->Release();
+			delete stages_[i];
+			stages_[i] = nullptr;
+		}
+	}
 
-	// 全てのアクターを回す
-	for (auto actor : allActor_)
-	{
-		// 更新処理
+	// 全アクター解放
+	for (auto actor : allActor_) {
 		actor->Release();
 		delete actor;
 	}
-
-	// 配列をクリア
 	allActor_.clear();
 }
 

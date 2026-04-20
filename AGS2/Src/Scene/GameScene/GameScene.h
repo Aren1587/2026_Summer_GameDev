@@ -24,6 +24,15 @@ public:
 private:
 	static constexpr int CAMERA_NUM = 2;
 
+	static constexpr int WORLD_NUM = 3;
+	static constexpr int PLAYER_NUM = 2;
+
+	// ステージを3つ用意
+	Stage* stages_[WORLD_NUM];
+
+	// プレイヤー
+	ActorBase* players_[PLAYER_NUM];
+
 	// カメラ
 	std::vector<Camera*> camera_;
 	Camera* camera1_;

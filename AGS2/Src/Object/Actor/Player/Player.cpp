@@ -1,11 +1,9 @@
 #include "Player.h"
-
 #include "../../../Application.h"
 #include "../../../Input/InputManager.h"
 #include "../../../Utility/AsoUtility.h"
 #include "../../../Utility/MatrixUtility.h"
 #include "../../Common/AnimationController.h"
-
 #include "../../../Camera/Camera.h"
 
 Player::Player(Camera* camera, int playerNo)
