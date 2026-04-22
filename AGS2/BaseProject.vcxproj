@@ -19,6 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Collider\ColliderSphere.cpp" />
+    <ClCompile Include="Src\Object\Collider\ColliderModel.cpp" />
+    <ClCompile Include="Src\Object\Collider\ColliderLine.cpp" />
+    <ClCompile Include="Src\Object\Collider\ColliderCapsule.cpp" />
+    <ClCompile Include="Src\Object\Collider\ColliderBase.cpp" />
     <ClCompile Include="Src\Common\FpsControl.cpp" />
     <ClCompile Include="Src\Object\Actor\ActorBase.cpp" />
     <ClCompile Include="Src\Object\Actor\Enemy\Enemy.cpp" />
@@ -39,8 +44,14 @@
     <ClCompile Include="Src\Scene\SceneBase.cpp" />
     <ClCompile Include="Src\Scene\TitleScene\TitleScene.cpp" />
     <ClCompile Include="Src\Utility\AsoUtility.cpp" />
+    <ClCompile Include="Src\Object\Common\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Collider\ColliderSphere.h" />
+    <ClInclude Include="Src\Object\Collider\ColliderModel.h" />
+    <ClInclude Include="Src\Object\Collider\ColliderLine.h" />
+    <ClInclude Include="Src\Object\Collider\ColliderCapsule.h" />
+    <ClInclude Include="Src\Object\Collider\ColliderBase.h" />
     <ClInclude Include="Src\Common\FpsControl.h" />
     <ClInclude Include="Src\Object\Actor\ActorBase.h" />
     <ClInclude Include="Src\Object\Actor\Enemy\Enemy.h" />
@@ -61,6 +72,7 @@
     <ClInclude Include="Src\Scene\SceneBase.h" />
     <ClInclude Include="Src\Scene\TitleScene\TitleScene.h" />
     <ClInclude Include="Src\Utility\AsoUtility.h" />
+    <ClInclude Include="Src\Object\Common\Transform.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
