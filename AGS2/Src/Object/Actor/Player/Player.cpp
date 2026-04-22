@@ -129,7 +129,7 @@ void Player::Move(void)
 	downKey_ = hitKey_;
 	hitKey_ = GetMouseInput();
 
-	if ((downKey_ != hitKey_) != 0)
+	if (((hitKey_ & MOUSE_INPUT_RIGHT) && !(downKey_ & MOUSE_INPUT_RIGHT)))
 	{
 		if (playerNo_ == 1)
 		{
