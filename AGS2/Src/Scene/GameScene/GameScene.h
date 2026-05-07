@@ -6,11 +6,20 @@
 
 class Camera;
 class Stage;
+class Object;
 class ActorBase;
 
 class GameScene : public SceneBase
 {
 public:
+	// 世界
+	enum class WORLD
+	{
+		LEFT,
+		RIGHT,
+		ANSWER
+	};
+
 	GameScene(void);				// コンストラクタ
 	~GameScene(void) override;		// デストラクタ
 
@@ -41,6 +50,8 @@ private:
 
 	// ステージ
 	Stage* stage_;
+
+	Object* object_;
 
 	// 全てのアクター
 	std::vector<ActorBase*> allActor_;

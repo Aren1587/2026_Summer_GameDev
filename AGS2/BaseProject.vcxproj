@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Actor\Object.cpp" />
     <ClCompile Include="Src\Object\Collider\ColliderSphere.cpp" />
     <ClCompile Include="Src\Object\Collider\ColliderModel.cpp" />
     <ClCompile Include="Src\Object\Collider\ColliderLine.cpp" />
@@ -47,6 +48,7 @@
     <ClCompile Include="Src\Object\Common\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Actor\Object.h" />
     <ClInclude Include="Src\Object\Collider\ColliderSphere.h" />
     <ClInclude Include="Src\Object\Collider\ColliderModel.h" />
     <ClInclude Include="Src\Object\Collider\ColliderLine.h" />
