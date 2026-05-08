@@ -6,6 +6,7 @@
 #include "../../Object/Actor/Player/Player.h"
 #include "../../Object/Actor/Enemy/Enemy.h"
 #include "../../Object/Actor/Stage/Stage.h"
+#include "../../Object/Actor/Object.h"
 
 GameScene::GameScene(void)
 {
@@ -47,6 +48,8 @@ void GameScene::Load(void)
 	camera2_ = new Camera();
 	camera3_ = new Camera();
 
+	object_ = new Object(WORLD::LEFT);
+	object_->Load();
 
 	// ステージを3つ生成・ロード
 	for (int i = 0; i < WORLD_NUM; ++i) {
@@ -111,7 +114,7 @@ void GameScene::Update(void)
 			WallCollision(actor);
 		}
 	}
-	
+	object_->Update();
 }
 
 void GameScene::Draw(void)
@@ -126,6 +129,8 @@ void GameScene::Draw(void)
 	camera1_->SetBeforeDraw();
 	stages_[1]->Draw();
 	players_[0]->Draw();
+	object_->SetWorld(WORLD::LEFT);
+	object_->Draw();
 
 	// 右画面（間違い2の世界）
 	SetDrawScreen(screen2);
@@ -133,6 +138,8 @@ void GameScene::Draw(void)
 	camera2_->SetBeforeDraw();
 	stages_[2]->Draw();
 	players_[1]->Draw();
+	object_->SetWorld(WORLD::RIGHT);
+	object_->Draw();
 
 	// 上画面（正解の世界）
 	SetDrawScreen(screen3);

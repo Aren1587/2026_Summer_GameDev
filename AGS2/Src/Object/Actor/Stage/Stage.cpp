@@ -51,6 +51,14 @@ void Stage::Draw(void)
 {
 	// ステージモデル描画
 	MV1DrawModel(modelId_);
+
+	DrawFormatString(
+		0, 20, 0xffffff,
+		"座標 :(%.1f, %.1f, %.1f)",
+		pos_.x,
+		pos_.y,
+		pos_.z
+	);
 }
 
 void Stage::Release(void)

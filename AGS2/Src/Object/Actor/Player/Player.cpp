@@ -100,6 +100,15 @@ void Player::Draw(void)
 		AsoUtility::Rad2DegF(angle_.y),
 		AsoUtility::Rad2DegF(angle_.z)
 	);
+
+	DrawFormatString(
+		0, yPos + 30, 0xffffff,
+		"P%dç¿ïW :(%.1f, %.1f, %.1f)",
+		playerNo_,
+		pos_.x,
+		pos_.y,
+		pos_.z
+	);
 }
 
 void Player::Release(void)
