@@ -19,8 +19,14 @@ public:
 		MAX,
 	};
 
+	enum class PLAYER_NO
+	{
+		PLAYER_ONE = 0,
+		PLAYER_TWO,
+	};
+
 	// コンストラクタ（プレイヤー番号を追加）
-	Player(Camera* camera, int playerNo);
+	Player(Camera* camera, PLAYER_NO playerNo);
 
 	// デストラクタ
 	~Player(void) override;
@@ -34,7 +40,7 @@ public:
 	// 解放
 	void Release(void) override;
 
-	void SetNo(int no) { playerNo_ = no; }
+	void SetNo(PLAYER_NO no) { playerNo_ = no; }
 
 private:
 
@@ -53,14 +59,15 @@ private:
 	// 移動制御
 	void Move(void) override;
 
-	void SetPlayerNo(int no) { playerNo_ = no; }
-
 private:
+
+	constexpr static VECTOR PLAYER_ONE_START_POS = { -100.0f, 0.0f, 0.0f };
+	constexpr static VECTOR PLAYER_TWO_START_POS = { 100.0f, 0.0f, 0.0f };
 	// カメラ
 	Camera* camera_;
 
-	// プレイヤー番号（1 or 2）
-	int playerNo_;
+	// プレイヤー番号（0 or 1）
+	PLAYER_NO playerNo_;
 
 	int movePlayerNo_;
 	int downKey_, hitKey_;

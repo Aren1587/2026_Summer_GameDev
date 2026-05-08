@@ -6,7 +6,7 @@
 #include "../../Common/AnimationController.h"
 #include "../../../Camera/Camera.h"
 
-Player::Player(Camera* camera, int playerNo)
+Player::Player(Camera* camera, PLAYER_NO playerNo)
 {
 	camera_ = camera;
 	playerNo_ = playerNo;
@@ -39,13 +39,13 @@ void Player::InitTransform(void)
 	MV1SetRotationMatrix(modelId_, mat);
 
 	// モデルの位置設定（プレイヤー番号で初期位置を分ける）
-	if (playerNo_ == 1)
+	if (playerNo_ == PLAYER_NO::PLAYER_ONE)
 	{
-		pos_ = { -100.0f, 0.0f, 0.0f };  // プレイヤー1は左側
+		pos_ = PLAYER_ONE_START_POS;  // プレイヤー1は左側
 	}
 	else
 	{
-		pos_ = { 100.0f, 0.0f, 0.0f };   // プレイヤー2は右側
+		pos_ = PLAYER_TWO_START_POS;   // プレイヤー2は右側
 	}
 	MV1SetPosition(modelId_, pos_);
 
@@ -91,7 +91,7 @@ void Player::Draw(void)
 	ActorBase::Draw();
 
 	// デバッグ表示の位置をプレイヤー番号で分ける
-	int yPos = playerNo_ == 1 ? 50 : 70;
+	int yPos = playerNo_ == PLAYER_NO::PLAYER_ONE ? 50 : 70;
 	DrawFormatString(
 		0, yPos, 0xffffff,
 		"P%d角度 :(%.1f, %.1f, %.1f)",
@@ -126,7 +126,7 @@ void Player::Move(void)
 	VECTOR dir = AsoUtility::VECTOR_ZERO;
 
 	// プレイヤー番号で入力デバイスを分ける
-	if (playerNo_ == 1)
+	if (playerNo_ == PLAYER_NO::PLAYER_ONE)
 	{
 		// プレイヤー1：WASD キー
 		if (InputManager::GetInstance()->IsNew(KEY_INPUT_W)) { dir = { 0.0f, 0.0f, 1.0f }; }
@@ -140,14 +140,7 @@ void Player::Move(void)
 
 	if (((hitKey_ & MOUSE_INPUT_RIGHT) && !(downKey_ & MOUSE_INPUT_RIGHT)))
 	{
-		if (playerNo_ == 1)
-		{
-			playerNo_ = 2;
-		}
-		else
-		{
-			playerNo_ = 1;
-		}
+		playerNo_ = (playerNo_ == PLAYER_NO::PLAYER_ONE) ? PLAYER_NO::PLAYER_TWO : PLAYER_NO::PLAYER_ONE;
 	}
 
 	if (!AsoUtility::EqualsVZero(dir))

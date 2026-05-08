@@ -58,8 +58,8 @@ void GameScene::Load(void)
 	}
 
 	// プレイヤー生成
-	players_[0] = new Player(camera1_, 1); // 間違い1の世界
-	players_[1] = new Player(camera2_, 2); // 間違い2の世界
+	players_[0] = new Player(camera1_, Player::PLAYER_NO::PLAYER_ONE); // 間違い1の世界
+	players_[1] = new Player(camera2_, Player::PLAYER_NO::PLAYER_TWO); // 間違い2の世界
 
 	// アクター配列に追加
 	for (int i = 0; i < PLAYER_NUM; ++i) {
@@ -121,7 +121,7 @@ void GameScene::Draw(void)
 {
 	int screen1 = MakeScreen(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, false);
 	int screen2 = MakeScreen(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, false);
-	int screen3 = MakeScreen(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, false);//Application::SCREEN_SIZE_X / 4, Application::SCREEN_SIZE_Y, false);
+	int screen3 = MakeScreen(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y, false);
 
 	// 左画面（間違い1の世界）
 	SetDrawScreen(screen1);
